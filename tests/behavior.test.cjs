@@ -7,3 +7,6 @@ test('invalid product cannot enter the cart',()=>{const x=boot();x.run('add(9999
 
 test('invalid browser cart entries are discarded on load',()=>{const x=boot();x.store.set('novashop-store-v1',JSON.stringify({cart:[{id:1,qty:2},{id:999,qty:1},{id:2,qty:100},{id:3,qty:-1}],orders:[]}));const cart=JSON.parse(JSON.stringify(x.run('load().cart')));assert.deepEqual(cart,[{id:1,qty:2}]);});
 test('malformed stored orders are excluded before rendering',()=>{const x=boot();x.store.set('novashop-store-v1',JSON.stringify({cart:[],orders:[{id:'bad',date:'2026-01-01',status:'demo',items:null,total:-100}]}));assert.equal(x.run('load().orders.length'),0);});
+
+test('product comparison limits selection to three and toggles items',()=>{const x=boot();x.run('toggleProductCompare(1);toggleProductCompare(2);toggleProductCompare(3);toggleProductCompare(4)');assert.equal(x.run('compareProducts.size'),3);x.run('toggleProductCompare(2)');assert.equal(x.run('compareProducts.size'),2);assert.equal(x.node('compare-product-count').textContent,'۲');});
+test('product comparison contains only selected products',()=>{const x=boot();x.run('toggleProductCompare(1);showProductCompare()');assert.match(x.node('product-compare-body').innerHTML,/هدفون بی‌سیم آریا/);assert.doesNotMatch(x.node('product-compare-body').innerHTML,/ساعت هوشمند نوا/);});
